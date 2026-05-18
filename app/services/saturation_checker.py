@@ -3,11 +3,11 @@ import numpy as np
 
 # --- Konstanta Skoring ---
 # Batas bawah rata-rata saturasi yang dianggap "vivid" (uang asli)
-SATURATION_HIGH_THRESHOLD = 80.0
+SATURATION_HIGH_THRESHOLD = 30.0
 # Batas minimum agar mendapat skor penuh (100)
-SATURATION_PERFECT = 130.0
+SATURATION_PERFECT = 80.0
 # Batas bawah absolut — di bawah ini skor 0
-SATURATION_FLOOR = 20.0
+SATURATION_FLOOR = 10.0
 
 
 def check_saturation(image_bgr: np.ndarray) -> dict:

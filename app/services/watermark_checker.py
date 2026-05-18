@@ -9,9 +9,9 @@ CONTOUR_MAX_AREA = 40_000
 
 # --- Konstanta Skoring Between-Class Variance ---
 # Variance minimum agar mendapat skor penuh dari komponen ini
-VARIANCE_PERFECT = 3000.0
+VARIANCE_PERFECT = 2200.0
 # Variance di bawah ini dianggap kontras sangat rendah
-VARIANCE_FLOOR = 200.0
+VARIANCE_FLOOR = 500.0
 
 # --- Bobot Komponen Skor Watermark ---
 # Skor akhir watermark = gabungan tiga komponen berikut
@@ -230,15 +230,27 @@ def _normalize(value: float, floor: float, perfect: float) -> float:
 
 def _score_white_ratio(ratio: float) -> float:
     """
-    Skor white pixel ratio berbentuk kurva segitiga (triangle function).
+    Skor white pixel ratio berdasarkan distribusi data nyata.
 
-    Puncak skor (100) ada di rasio 0.5 — distribusi piksel seimbang.
-    Skor turun linear menuju 0 di rasio 0.0 dan 1.0.
+    Data menunjukkan:
+    - ASLI  : white ratio 0.53–0.75 (avg 0.67)
+    - PALSU : white ratio 0.67–0.93 (avg 0.79)
+
+    Skor penuh untuk ratio di range 0.53–0.70 (zona ASLI).
+    Turun linear menuju 0 ketika ratio mendekati 1.0 (zona PALSU).
     """
-    # Jarak dari titik ideal 0.5, maksimal 0.5
-    distance = abs(ratio - 0.5)
-    score = (1.0 - (distance / 0.5)) * 100.0
-    return max(score, 0.0)
+    IDEAL_LOW  = 0.53   # Batas bawah zona ASLI
+    IDEAL_HIGH = 0.70   # Batas atas zona ASLI
+
+    if ratio <= IDEAL_LOW:
+        # Terlalu gelap — turun menuju 0 di ratio 0.3
+        return max((ratio - 0.30) / (IDEAL_LOW - 0.30) * 100.0, 0.0)
+    elif ratio <= IDEAL_HIGH:
+        # Zona ideal ASLI → skor penuh
+        return 100.0
+    else:
+        # Di atas 0.70 (zona PALSU) → turun menuju 0 di ratio 1.0
+        return max((1.0 - ratio) / (1.0 - IDEAL_HIGH) * 100.0, 0.0)
 
 
 def _score_contours(contours_found: int) -> float:

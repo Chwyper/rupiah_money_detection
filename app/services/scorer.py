@@ -2,8 +2,8 @@
 WEIGHT_SATURATION = 0.5    # Bobot kelompok fitur saturasi warna
 WEIGHT_WATERMARK = 0.5     # Bobot kelompok fitur watermark
 
-AUTHENTIC_THRESHOLD = 60   # Skor gabungan ≥ ini → label ASLI
-WARNING_THRESHOLD = 70     # Skor gabungan < ini → tampilkan pesan warning
+AUTHENTIC_THRESHOLD = 35   # Skor gabungan ≥ ini → label ASLI
+WARNING_THRESHOLD = 50     # Skor gabungan < ini → tampilkan pesan warning
 
 
 def compute_final_result(
